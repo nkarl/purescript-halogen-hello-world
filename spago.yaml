@@ -1,0 +1,22 @@
+package:
+  name: halogen-hello-world
+  dependencies:
+    - aff
+    - affjax
+    - affjax-web
+    - console
+    - effect
+    - either
+    - halogen
+    - halogen-css
+    - maybe
+    - prelude
+    - web-events
+  test:
+    main: Test.Main
+    dependencies: []
+workspace:
+  buildOpts:
+    censorLibraryWarnings: all
+  packageSet:
+    registry: 48.4.0
