@@ -10,5 +10,4 @@
 /.psa*
 /.spago
 /dist/
-/flake.lock
-/spago.lock
+flake.lock
