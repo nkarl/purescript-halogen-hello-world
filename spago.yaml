@@ -12,6 +12,9 @@ package:
     - maybe
     - prelude
     - web-events
+    - routing
+    - routing-duplex
+    - uuid
   test:
     main: Test.Main
     dependencies: []

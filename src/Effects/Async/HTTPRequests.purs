@@ -1,10 +1,10 @@
-module Component.HTTPRequests where
+module Effects.Async.HTTPRequests where
 
 import Prelude
 
 import Affjax.ResponseFormat as AXRF
 import Affjax.Web as AX
-import CSS (backgroundColor, border, borderRadius, color, margin, padding, solid)
+import CSS (backgroundColor, border, borderRadius, padding, solid)
 import CSS.Color as Color
 import CSS.Size (em, px)
 import Data.Either (hush)
@@ -18,30 +18,28 @@ import Halogen.HTML.Properties as HP
 import Web.Event.Event (Event)
 import Web.Event.Event as Event
 
-type State
-  = { loading :: Boolean
-    , username :: String
-    , result :: Maybe String
-    }
+type State =
+  { loading :: Boolean
+  , username :: String
+  , result :: Maybe String
+  }
 
 data Action
   = SetUsername String
   | MakeRequest Event
 
 -- | Component with an initial state
-component :: forall query input output m. MonadAff m => H.Component query input output m
+component :: forall q i o m. MonadAff m => H.Component q i o m
 component =
   H.mkComponent
     { initialState
     , render
-    , eval:
-        H.mkEval
-          $ H.defaultEval
-              { handleAction = handleAction
-              }
+    , eval: H.mkEval $ H.defaultEval
+        { handleAction = handleAction
+        }
     }
   where
-  initialState :: forall i. i -> State
+  initialState :: i -> State
   initialState _ =
     { loading: false
     , username: ""
@@ -65,8 +63,8 @@ render state =
         ]
     -- the submit button
     , HH.button
-        [ HP.disabled state.loading
-        , HP.type_ HP.ButtonSubmit
+        [ HP.disabled state.loading -- NOTE: button should be disabled while loading content.
+        --, HP.type_ HP.ButtonSubmit -- NOTE: default behavior is submit, no need to specify.
         ]
         [ HH.text "Fetch info" ]
     , HH.p_
@@ -74,7 +72,7 @@ render state =
     -- selects the render possiblities for the content of the request body
     , HH.div_ case state.result of
         Nothing -> []
-        Just res ->
+        Just responseBody ->
           [ HH.h2_
               [ HH.text "Response:" ]
           , HH.pre
@@ -84,18 +82,22 @@ render state =
                   padding (em 2.0) (em 2.0) (em 2.0) (em 2.0)
                   backgroundColor $ Color.hsl 26.0 0.93 0.78
               ]
-              [ HH.code_ [ HH.text res ] ]
+              [ HH.code_ [ HH.text responseBody ] ]
           ]
     ] -- childs
 
 -- event handler implemented for the _form_ component
--- accepts two possibilities, either `SetUsername s` or `MakeRequest e`
-handleAction :: forall output m. MonadAff m => Action -> H.HalogenM State Action () output m Unit
+-- accepts Action, which has 2 variants, either `SetUsername s` or `MakeRequest e`
+handleAction :: forall o m. MonadAff m => Action -> H.HalogenM State Action () o m Unit
 handleAction = case _ of
   SetUsername username -> do
-    H.modify_ _ { username = username {-, result = Nothing -} } -- FIX: do not update result until we set the new result below.
+    H.modify_ _
+      { username = username
+      {- , result = Nothing -}
+      -- BUG: screen should keep previous result until we click submit button.
+      }
   MakeRequest event -> do
-    H.liftEffect $ Event.preventDefault event
+    H.liftEffect $ Event.preventDefault event -- lift the Effect into the HalogenM context
     username <- H.gets _.username
     H.modify_ _ { loading = true }
     response <- H.liftAff $ AX.get AXRF.string ("https://api.github.com/users/" <> username)
@@ -103,5 +105,16 @@ handleAction = case _ of
 
 {--
   NOTE: In this example, we see that `HalogenM` is the outermost context.
-    Inside this context, we can run (lifted) `Effect` and `Aff`.
+    Inside this `HalogenM` context, we can run (lifted) contexts of the type `Effect` and `Aff`.
+    In the the second case, `MakeRequest event`, we see the event-driven nature of the underlying
+    Halogen/Node infrastructure. The runtime always listens for _any_ state changes and invokes
+    the `render` function accordingly.
+--}
+
+{--
+  NOTE: potential experimentation/improvement
+  - combine SetUsername with MakeRequest
+    - allows for retrieving user info in real time.
+    - consideration: required local database index, in order to
+      - prevent from being rate limited by GitHub API
 --}
