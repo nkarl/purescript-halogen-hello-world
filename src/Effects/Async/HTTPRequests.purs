@@ -90,22 +90,25 @@ render state =
 -- accepts Action, which has 2 variants, either `SetUsername s` or `MakeRequest e`
 handleAction :: forall o m. MonadAff m => Action -> H.HalogenM State Action () o m Unit
 handleAction = case _ of
+
   SetUsername username -> do
     H.modify_ _
       { username = username
       {- , result = Nothing -}
       -- BUG: screen should keep previous result until we click submit button.
       }
-  MakeRequest event -> do
-    H.liftEffect $ Event.preventDefault event -- lift the Effect into the HalogenM context
+
+  MakeRequest e -> do
+    H.liftEffect $ Event.preventDefault e -- lift the Effect into the HalogenM context
     username <- H.gets _.username
     H.modify_ _ { loading = true }
     response <- H.liftAff $ AX.get AXRF.string ("https://api.github.com/users/" <> username)
     H.modify_ _ { loading = false, result = map _.body (hush response) }
 
 {--
-  NOTE: In this example, we see that `HalogenM` is the outermost context.
+  NOTE: In this example, we see that `HalogenM` is the outermost context layer.
     Inside this `HalogenM` context, we can run (lifted) contexts of the type `Effect` and `Aff`.
+
     In the the second case, `MakeRequest event`, we see the event-driven nature of the underlying
     Halogen/Node infrastructure. The runtime always listens for _any_ state changes and invokes
     the `render` function accordingly.

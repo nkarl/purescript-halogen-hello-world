@@ -4,19 +4,20 @@ import Prelude
 
 import Effect.Aff.Class (class MonadAff)
 
+import Data.String                          as String
 import Data.Maybe (Maybe(..))
-import Data.String as String
 
-import Halogen as H
-import Halogen.HTML as HH
-import Halogen.Query.Event as HQE
+import Halogen                              as H
+import Halogen.HTML                         as HH
+import Halogen.Query.Event                  as HQE
 
-import Web.Event.Event as Event
-import Web.HTML.HTMLDocument as HTMLDoc
+import Web.Event.Event                      as E
+import Web.HTML.HTMLDocument                as HTMLDocument
+import Web.UIEvent.KeyboardEvent            as KE
+import Web.UIEvent.KeyboardEvent.EventTypes as KET
+
 import Web.HTML (window)
 import Web.HTML.Window (document)
-import Web.UIEvent.KeyboardEvent as KE
-import Web.UIEvent.KeyboardEvent.EventTypes as KET
 
 type State = { string :: String }
 
@@ -34,7 +35,9 @@ component =
     , initialize = Just Initialize
     }
   }
+
   where
+
     initialState :: i -> State
     initialState _ = { string: "" }
   
@@ -50,26 +53,35 @@ component =
     handleAction = case _ of
                        
                       Initialize -> do
-                         documentObject <- H.liftEffect $ document =<< window
-                         H.subscribe' \sid ->
-                           HQE.eventListener -- NOTE: uses types from `purescript-web` lib to manually construct event listener on the DOM
-                              KET.keyup
-                              (HTMLDoc.toEventTarget documentObject)
+                         doc <- H.liftEffect $ document =<< window
+                         H.subscribe'
+                            \sid -> HQE.eventListener -- :: ∀ a. EventType -> EventTarget -> (Event -> Maybe a) -> Emitter a
+                              (KET.keyup)
+                              (HTMLDocument.toEventTarget doc)
                               ( ( ( HandleKey sid ) <$> _ ) <<< KE.fromEvent )
                          --pure unit
                          
-                      HandleKey _ event -- NOTE: takes _any_ subscription id b/c it's always listening.
-                        | KE.shiftKey event -> do
-                            H.liftEffect $ Event.preventDefault (KE.toEvent event)
-                            let char = KE.key event
+                      HandleKey _ e -- NOTE: takes _any_ subscription id b/c it's always listening (already subscribed on init).
+                        | KE.shiftKey e -> do
+                            H.liftEffect $ E.preventDefault (KE.toEvent e)
+                            let char = KE.key e
                             when (String.length char == 1) do
                               H.modify_ \state -> state { string = state.string <> char }
                             --pure unit
                             
-                        | KE.key event == "Enter" -> do
-                            H.liftEffect $ Event.preventDefault (KE.toEvent event)
+                        | KE.key e == "Enter" -> do
+                            H.liftEffect $ E.preventDefault (KE.toEvent e)
                             H.modify_ _ { string = "" }
                             --pure unit
                             
                         | otherwise ->
                             pure unit
+
+
+{--
+  NOTE: the hardest part about this example is to track the following points:
+    1. a continuous path connecting many PS library implementation from a `HTMLDocument` to an `EventTarget`
+    2. a Halogen implementation of this use case as an `Emitter a`
+    3. joining 1 and 2 together.
+--}
+
