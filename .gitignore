@@ -9,4 +9,4 @@
 /.purs*
 /.psa*
 /.spago
-/dist/
+/dist/*.js

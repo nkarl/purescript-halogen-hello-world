@@ -9,16 +9,16 @@ import Effect.Class (class MonadEffect)
 import Effect.Class.Console (log, logShow)
 import Halogen as H
 import Halogen.HTML as HH
-import Next.Patterns.ParentQueries.Child.Button as Button
+import Next.Patterns.ParentQueries.Child.Button as Child
 
 -- The parent component supports one type of child component, which uses the
 -- `Slot` slot type. You can have as many of this type of child component
 -- as there are integers.
-type Slots = ( button :: Button.Slot Int )
+type Slots = ( button :: Child.Slot Int )
 
 -- The parent component can only evaluate one action: handling output messages
 -- from the button component, of type `Output`.
-data Action = Handle Int Button.Output
+data Action = Handle Int Child.Output
 
 -- The parent component maintains in local state the number of times all its
 -- child component buttons have been clicked.
@@ -48,11 +48,11 @@ component =
     let clicks = show clicked
     HH.div_
       [ -- We render our first button with the slot id 0
-        HH.slot Button._button 0 Button.child { label: clicks <> " Enabled" } $ Handle 0
+        HH.slot Child._button 0 Child.button { label: clicks <> " Enabled" } $ Handle 0
         -- We render our second button with the slot id 1
-      , HH.slot Button._button 1 Button.child { label: clicks <> " Power" } $ Handle 1
+      , HH.slot Child._button 1 Child.button { label: clicks <> " Power" } $ Handle 1
         -- We render our third button with the slot id 2
-      , HH.slot Button._button 2 Button.child { label: clicks <> " Switch" } $ Handle 2
+      , HH.slot Child._button 2 Child.button { label: clicks <> " Switch" } $ Handle 2
       ]
 
   handleAction :: Action -> H.HalogenM State Action Slots o m Unit
@@ -61,14 +61,14 @@ component =
     -- of our button component.
     Handle idx output -> case output of
       -- There is only one output message, `Clicked`.
-      Button.Clicked -> do
+      Child.Clicked -> do
         -- When the `Clicked` message arises we will increment our clicked count
         -- in state, then send a query to the first button to tell it to be `true`,
         -- then send a query to all the child components requesting their current
         -- enabled state, which we log to the console.
         H.modify_ \state -> state { clicked = state.clicked + 1 }
-        H.tell Button._button 0 (Button.SetEnabled true)
-        on :: Map _ _ <- H.requestAll Button._button Button.GetEnabled
+        H.tell Child._button 0 (Child.SetEnabled true)
+        on :: Map _ _ <- H.requestAll Child._button Child.GetEnabled
         logShow (on)
         let
             --arr = fromFoldable on
@@ -76,7 +76,7 @@ component =
         log $ show (fromFoldable on'' :: Array _)
         --log $ show (arr)
         --log $ "at index: "  <> (show idx) <> " -> " <> show (index arr idx)
-        --on' <- H.request Button._button idx Button.GetEnabled
+        --on' <- H.request Child._button idx Child.GetEnabled
         --log $ show (on')
 
 --request

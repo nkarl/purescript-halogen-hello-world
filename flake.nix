@@ -2,7 +2,7 @@
   description = "RealWorld spec in the PureScript Halogen framework";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
     purescript-overlay.url = "github:thomashoneyman/purescript-overlay";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
@@ -29,12 +29,13 @@
           buildInputs =
             [
               pkgs.esbuild
-              pkgs.nodejs_20
+              pkgs.nodejs_22
               pkgs.purs
               pkgs.purs-tidy
               pkgs.purs-backend-es
               pkgs.purescript-language-server
               pkgs.spago-unstable
+              pkgs.pnpm
             ];
         });
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
