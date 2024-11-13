@@ -24,9 +24,10 @@ component =
     }
 
   where
+  initialState :: i -> State
   initialState _ = 0
 
-  render :: State -> H.ComponentHTML Action () m
+  render :: forall slots. State -> H.ComponentHTML Action slots m
   render s =
     HH.div_
       [ HH.button [ HE.onClick \_ -> Decrement ] [ HH.text "-" ]

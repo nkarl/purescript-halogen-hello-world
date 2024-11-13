@@ -47,7 +47,7 @@ component =
     }
 
 -- the renderer function. creates a _form_ that accepts a state and produces an HTML
-render :: forall m. State -> H.ComponentHTML Action () m
+render :: forall slots m. State -> H.ComponentHTML Action slots m
 render state =
   HH.form
     [ HE.onSubmit \e -> MakeRequest e ] -- props
@@ -86,8 +86,8 @@ render state =
           ]
     ] -- childs
 
--- event handler implemented for the _form_ component
--- accepts Action, which has 2 variants, either `SetUsername s` or `MakeRequest e`
+-- | event handler implemented for the _form_ component.
+-- | accepts Action, which has 2 variants, either `SetUsername s` or `MakeRequest e`.
 handleAction :: forall o m. MonadAff m => Action -> H.HalogenM State Action () o m Unit
 handleAction = case _ of
 

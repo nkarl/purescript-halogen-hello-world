@@ -1,4 +1,4 @@
-module Next.Routing.Duplex where
+module Next.Routing.SetHash where
 
 import Prelude
 
@@ -29,7 +29,7 @@ component =
     render :: State -> H.ComponentHTML Action () m
     render _ = do
       let
-          s = "hello world"
+          s = "hello-world"
       HH.div_
         [ HH.button
         [ HE.onClick \_ -> SetHash s ]
