@@ -1,4 +1,4 @@
-module Next.Patterns.ChildNotifies.Parent.Button where
+module Next.Patterns.ChildNotifies.Child.Button where
 
 import Prelude
 
@@ -11,7 +11,7 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Type.Proxy (Proxy(..))
 
-_button = Proxy :: Proxy "button"
+_component = Proxy :: Proxy "component"
 
 data Output = Clicked
 
@@ -22,8 +22,8 @@ instance showOutput :: Show Output where
 
 data Action = Click
 
-button :: ∀ q i m. MonadEffect m => H.Component q i Output m
-button =
+component :: ∀ q i m. MonadEffect m => H.Component q i Output m
+component =
   H.mkComponent
   { initialState: identity
   , render
@@ -42,6 +42,6 @@ button =
   handleAction :: forall s. Action -> H.HalogenM s Action () Output m Unit
   handleAction = case _ of
                      Click -> do
-                        H.liftEffect $ log $ "button is " <> show Clicked
+                        H.liftEffect $ log $ "component is " <> show Clicked
                         H.raise Clicked
 

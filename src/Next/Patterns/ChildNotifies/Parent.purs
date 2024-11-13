@@ -8,13 +8,13 @@ import Effect.Class (class MonadEffect)
 import Effect.Class.Console (log)
 import Halogen as H
 import Halogen.HTML as HH
-import Next.Patterns.ChildNotifies.Parent.Button as B
+import Next.Patterns.ChildNotifies.Child.Button as Child
 
-type Slots = ( button :: forall q. H.Slot q B.Output Int )
+type Slots = ( component :: forall q. H.Slot q Child.Output Int )
 
 type State = Int
 
-data Action = HandleButton B.Output
+data Action = HandleButton Child.Output
 
 derive instance genericAction :: Generic Action _
 
@@ -38,14 +38,14 @@ component =
   render :: State -> H.ComponentHTML Action Slots m
   render s =
     HH.div_
-      [ HH.slot B._button 0 B.button s HandleButton
+      [ HH.slot Child._component 0 Child.component s HandleButton
       , HH.div_ [ HH.text (show s) ]
       ]
 
   handleAction :: Action -> H.HalogenM State Action Slots o m Unit
   handleAction = case _ of
                      HandleButton output -> case output of
-                       B.Clicked -> do
+                       Child.Clicked -> do
                           H.modify_ \s -> s + 1
                           s <- H.get
                           H.liftEffect $ log $ show s
