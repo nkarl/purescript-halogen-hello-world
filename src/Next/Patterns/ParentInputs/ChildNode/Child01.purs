@@ -3,17 +3,16 @@ module Next.Patterns.ParentInputs.Child01 where
 import Prelude
 import Data.Maybe (Maybe(..))
 
+import CSS (backgroundColor, border, borderRadius, padding, solid)
+import CSS.Color                                                    as Color
+import CSS.Size (em, px)
 import Halogen                                                      as H
 import Halogen.HTML                                                 as HH
 import Halogen.HTML.CSS                                             as HCSS
 
-import CSS (backgroundColor, border, borderRadius, padding, solid)
-import CSS.Color                                                    as Color
-import CSS.Size (em, px)
+type Input  = { label :: Int }
 
-type Input  = { label :: String }
-
-type State  = { label :: String }
+type State  = { label :: Int }
 
 data Action = Receive Input
 
@@ -42,9 +41,13 @@ component =
                       padding         (em 2.0) (em 2.0) (em 2.0) (em 2.0)
                       backgroundColor (Color.hsl 26.0 0.93 0.78)
       ]
-      [ HH.text label ]
+      [ HH.text $ show label ]
 
   handleAction :: Action -> H.HalogenM State Action () o m Unit
   handleAction = case _ of
 
                      Receive input -> H.modify_ _ { label = input.label }
+
+{--
+  Upon receiving input, the child simply updates the state and renders it.
+--}
