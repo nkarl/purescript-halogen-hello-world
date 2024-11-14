@@ -59,4 +59,4 @@ component =
       -- next line doesn't work. It will distort the button's length with every update. This is because
       -- each update appends to the local component's label. The new label is carried over to the next state.
       --H.modify_ \s -> s { label = s.label <> show c, count = c }
-      H.modify_ \s -> s { label = "Click Me " <> show c, count = c }
+      H.modify_ \s -> s { label = "Click Me! " <> show c <> " clicks", count = c }

@@ -14,47 +14,47 @@ data Output = Clicked
 
 derive instance genericOutput :: Generic Output _
 
-type Slots = ( component :: forall q. H.Slot q Output Int )
-
 instance showOutput :: Show Output where
   show = genericShow
 
 data Action = Click
 
+type Slots = ( component :: forall q. H.Slot q Output Int )
+
 component :: ∀ q i m. MonadEffect m => H.Component q i Output m
 component =
   H.mkComponent
-  { initialState: identity
-  , render
-  , eval: H.mkEval H.defaultEval
-    { handleAction = handleAction
+    { initialState: identity
+    , render
+    , eval: H.mkEval H.defaultEval
+        { handleAction = handleAction
+        }
     }
-  }
   where
 
   render :: forall t w. t -> HH.HTML w Action
   render _ =
     HH.button
       [ HE.onClick \_ -> Click ]
-      [ HH.text "Not Clicked. Click Me!" ]
+      [ HH.text "Click Me!" ]
 
   handleAction :: forall s. Action -> H.HalogenM s Action () Output m Unit
   handleAction = case _ of
                      Click ->
-                       do H.liftEffect $ log $ "component is " <> show Clicked
+                       do log ("component is " <> show Clicked)
                           H.raise Clicked
 
 {--
   The Child does not track any local state.
   
-  However, it generates Action events. Best suited for when we need to define
-  action variants on the UI.
+  However, it generates Action events. These events are sent as output to Parent.
+
+  This pattern is suited for we have many action variants on a UI component.
 
   This is a simple example. However, we can imagine more complex situations where
   we need to handle a collection of actions done on a Child component. These
   actions could be organized in a record type and sent as notification/output
   to the Parent node.
 
-  Furthermore, these actions might be async, which require the MonadAff
-  constraint.
+  Furthermore, these actions might be async, which require the MonadAff constraint.
 --}

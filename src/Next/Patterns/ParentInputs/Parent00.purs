@@ -20,7 +20,7 @@ component = H.mkComponent
   render :: ∀ s a. s -> H.ComponentHTML a Child.Slots m
   render _ =
     HH.div_
-      [ HH.slot_ (Proxy :: Proxy "component") unit Child.component { label: "Click Me" }
+      [ HH.slot_ (Proxy :: Proxy "component") unit Child.component { label: "Not Clicked. Click Me!" }
       --[ HH.slot_ _button unit childComponent { label: "Click Me" } -- NOTE: there is only one child, we use `unit` for the 2nd param slot `s`.
       ]
 
