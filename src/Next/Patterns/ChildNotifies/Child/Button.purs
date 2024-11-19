@@ -21,7 +21,7 @@ data Action = Click
 
 type Slots = ( component :: forall q. H.Slot q Output Int )
 
-component :: ∀ q i m. MonadEffect m => H.Component q i Output m
+component :: forall q i m. MonadEffect m => H.Component q i Output m
 component =
   H.mkComponent
     { initialState: identity
@@ -32,7 +32,7 @@ component =
     }
   where
 
-  render :: forall t w. t -> HH.HTML w Action
+  render :: forall s w. s -> HH.HTML w Action
   render _ =
     HH.button
       [ HE.onClick \_ -> Click ]

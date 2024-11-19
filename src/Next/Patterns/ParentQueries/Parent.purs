@@ -2,93 +2,60 @@ module Next.Patterns.ParentQueries.Parent where
 
 import Prelude
 
-import Data.Array (fromFoldable)
-import Data.Map.Internal (Map)
 import Data.Maybe (Maybe(..))
 import Effect.Class (class MonadEffect)
-import Effect.Class.Console (log, logShow)
+import Effect.Class.Console (logShow)
 import Halogen as H
 import Halogen.HTML as HH
-import Next.Patterns.ParentQueries.Child.Button as Child
+import Next.Patterns.ParentQueries.Child.Button as Child.Button
 
--- The parent component supports one type of child component, which uses the
--- `Slot` slot type. You can have as many of this type of child component
--- as there are integers.
-type Slots = ( button :: Child.Slot Int )
+-- | The Parent evaluates only one action: handling events output from the Child button (type `Output`).
+data Action = Handle Int Child.Button.Output
 
--- The parent component can only evaluate one action: handling output messages
--- from the button component, of type `Output`.
-data Action = Handle Int Child.Output
+-- | The Parent maintains a local state for the number of clicks on all its Child buttons.
+type State =
+  { clicked :: Int
+  , index   :: Maybe Int -- for indexing the specific Child button
+  }
 
--- The parent component maintains in local state the number of times all its
--- child component buttons have been clicked.
-type State = { clicked :: Int, index :: Maybe Int }
-
--- The parent component uses no query, input, or output types of its own. It can
--- use any monad so long as that monad can run `Effect` functions.
+-- | The Parent uses no q, i, o. It uses any monad that is constrained to `Effect`ful functions.
 component :: forall q i o m. MonadEffect m => H.Component q i o m
 component =
   H.mkComponent
     { initialState
     , render
-      -- The only internal event this component can handle are actions as
-      -- defined in the `Action` type.
-    , eval: H.mkEval $ H.defaultEval { handleAction = handleAction }
+    , eval: H.mkEval $ H.defaultEval -- Only one action event is handled here, as defined in the `Action` type.
+        { handleAction = handleAction
+        }
     }
   where
   initialState :: i -> State
   initialState _ = { clicked: 0, index: Nothing }
 
-  -- We render three buttons, handling their output messages with the `Handle`
-  -- action. When our state changes this render function will run again, each time
-  -- sending new input (which contains a new label for the child button component
-  -- to use.)
-  render :: State -> H.ComponentHTML Action Slots m
+  -- We render three buttons, handling their output messages with the `Handle` action.
+  -- When this component's state changes, `render` will run again, each time sending new input
+  -- (which contains a new label for the Child button to use.)
+  render :: State -> H.ComponentHTML Action (Child.Button.Slots) m
   render { clicked } = do
     let clicks = show clicked
     HH.div_
-      [ -- We render our first button with the slot id 0
-        HH.slot Child._button 0 Child.button { label: clicks <> " Enabled" } $ Handle 0
-        -- We render our second button with the slot id 1
-      , HH.slot Child._button 1 Child.button { label: clicks <> " Power" } $ Handle 1
-        -- We render our third button with the slot id 2
-      , HH.slot Child._button 2 Child.button { label: clicks <> " Switch" } $ Handle 2
+      [ HH.slot Child.Button._label 0 Child.Button.component { label: clicks <> " Enabled" } $ Handle 0
+      , HH.slot Child.Button._label 1 Child.Button.component { label: clicks <> " Power"   } $ Handle 1
+      , HH.slot Child.Button._label 2 Child.Button.component { label: clicks <> " Switch"  } $ Handle 2
       ]
 
-  handleAction :: Action -> H.HalogenM State Action Slots o m Unit
+  handleAction :: Action -> H.HalogenM State Action (Child.Button.Slots) o m Unit
   handleAction = case _ of
-    -- We handle one action, `Handle`, which itself handles the output messages
-    -- of our button component.
-    Handle idx output -> case output of
-      -- There is only one output message, `Clicked`.
-      Child.Clicked -> do
-        -- When the `Clicked` message arises we will increment our clicked count
-        -- in state, then send a query to the first button to tell it to be `true`,
-        -- then send a query to all the child components requesting their current
-        -- enabled state, which we log to the console.
-        H.modify_ \state -> state { clicked = state.clicked + 1 }
-        H.tell Child._button 0 (Child.SetEnabled true)
-        on :: Map _ _ <- H.requestAll Child._button Child.GetEnabled
-        logShow (on)
-        let
-            --arr = fromFoldable on
-            on'' = on :: Map Int Boolean 
-        log $ show (fromFoldable on'' :: Array _)
-        --log $ show (arr)
-        --log $ "at index: "  <> (show idx) <> " -> " <> show (index arr idx)
-        --on' <- H.request Child._button idx Child.GetEnabled
-        --log $ show (on')
+    -- The only action variant, `Handle *`, take cares of the output messages from our button component.
+    -- the `Handle` function does not use the Child button's index. It is only used by the Parent.
+    Handle _ output -> case output of
 
---request
-  --:: ∀ s a o m label slots q o' slot a _1
-   --. Cons label (Slot q o' slot) _1 slots
-  --=> IsSymbol label
-  --=> Ord slot
-  --=> Proxy label -> slot -> Request q a -> HalogenM state a slots o m (Maybe a)
+      Child.Button.Clicked -> do -- There is only one output variant, `Clicked`.
 
---requestAll
-  --:: ∀ s a o m label slots q o' slot a _1
-   --. Cons label (Slot q o' slot) _1 slots
-  --=> IsSymbol label
-  --=> Ord slot
-  --=> Proxy label -> Request q a -> HalogenM s a slots o m (Map slot a)
+        -- When the `Clicked` message arises we will
+        --    1. increment our `state.clicked` count
+        --    2. send a query to the first button to tell it to be `true`
+        --    3. send a query to all child buttons to return their state (grouped and logged to the console)
+        H.modify_     \state -> state { clicked = state.clicked + 1 }
+        H.tell        Child.Button._label 0 (Child.Button.SetEnabled true) >>= logShow
+        H.requestAll  Child.Button._label Child.Button.GetEnabled >>= logShow
