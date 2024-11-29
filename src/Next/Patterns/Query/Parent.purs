@@ -2,9 +2,10 @@ module Next.Patterns.Query.Parent where
 
 import Prelude
 
+import Effect.Class (class MonadEffect)
+import Effect.Class.Console (logShow)
 import Halogen as H
 import Halogen.HTML as HH
-
 import Next.Patterns.Query.Child.Button as Button
 
 type State = { clickCount :: Int }
@@ -15,7 +16,7 @@ data Action = Handle WhichButton Button.Output
 
 type Slots = ( button :: Button.Slot )
 
-component :: forall q i o m. H.Component q i o m
+component :: forall q i o m. MonadEffect m => H.Component q i o m
 component =
   H.mkComponent
     { initialState
@@ -42,3 +43,6 @@ component =
     Handle _ output -> case output of
       Button.Clicked -> do
         H.modify_ \s -> s { clickCount = s.clickCount + 1 }
+        H.requestAll  Button._label     (Button.GetSwitch) >>= logShow
+        H.tell        Button._label 0   (Button.SetSwitch true)
+

@@ -18,14 +18,18 @@ data Action
 
 data Output = Clicked
 
-type Slot = forall q o a. H.Slot q o a
+data Query a
+  = SetSwitch Boolean a
+  | GetSwitch (Boolean -> a)
+
+type Slot = H.Slot Query Output
 
 _label = Proxy :: Proxy "button"
 
-button :: forall q m. H.Component q Input Output m
+button :: forall m. H.Component Query Input Output m
 button = component
 
-component :: forall q m. H.Component q Input Output m
+component :: forall m. H.Component Query Input Output m
 component =
   H.mkComponent
     { initialState
@@ -33,6 +37,7 @@ component =
     , eval: H.mkEval $ H.defaultEval
         { handleAction = handleAction
         , receive = Just <<< Receive
+        , handleQuery = handleQuery
         }
     }
   where
@@ -52,3 +57,13 @@ component =
 
     Receive input -> do
       H.modify_ \s -> s { label = input }
+
+  handleQuery :: forall a. Query a -> H.HalogenM State Action () Output m (Maybe a)
+  handleQuery = case _ of
+    SetSwitch enabled any -> do
+       H.modify_ \s -> s { isEnabled = enabled }
+       pure $ Just any
+
+    GetSwitch reply -> do
+       { isEnabled } <- H.get
+       pure $ Just (reply isEnabled)
