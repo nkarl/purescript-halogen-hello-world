@@ -14,8 +14,7 @@ import Halogen.VDom.Driver (runUI)
 --import Next.Patterns.Input.Parent01 as Input.Parent01
 --import Next.Patterns.Notify.Parent as Notify.Parent
 --import Next.Patterns.Notify.Example as Notify.Example
---import Next.Patterns.Query.Parent as Query.Parent
-import Next.Patterns.Query.Example as Query.Example
+import Next.Patterns.Query.Parent as Query.Parent
 --import Next.Routing.SetHash as SetHash
 
 {-
@@ -36,6 +35,5 @@ main =
       --Input.Parent01.component unit body
       --Notify.Parent.component unit body
       --Notify.Example.component unit body
-      --Query.Parent.component unit body
-      Query.Example.component unit body
+      Query.Parent.component unit body
       --SetHash.component unit body
