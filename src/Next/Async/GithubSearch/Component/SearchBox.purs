@@ -8,9 +8,12 @@ import Halogen.HTML.Properties as HP
 import MyUtils (className)
 import Type.Proxy (Proxy(..))
 
-type Slot = forall q o a. H.Slot q o a
+type Slot = forall q o. H.Slot q o Unit
 
-label = Proxy :: Proxy "component"
+label = Proxy :: Proxy "searchBox"
+
+searchBox :: forall q i o m. H.Component q i o m
+searchBox = component
 
 component :: forall q i o m. H.Component q i o m
 component =

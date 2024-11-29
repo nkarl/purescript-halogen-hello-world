@@ -11,7 +11,10 @@ import Next.Async.GithubSearch.Component.SearchBox as SearchBox
 
 type State = { username :: Maybe String }
 
-type Slots q o r = (component :: H.Slot q o Unit | r)
+type Slots =
+  ( searchBox :: SearchBox.Slot
+  , contentPanel :: ContentPanel.Slot
+  )
 
 component :: forall q i o m. H.Component q i o m
 component =
@@ -23,7 +26,7 @@ component =
   where
   initialState _ = { username: Nothing }
 
-render :: forall s a q o r m. s -> HH.ComponentHTML a (Slots q o r) m
+render :: forall s a m. s -> HH.ComponentHTML a (Slots) m
 render _ =
   HH.div
     [ className "container-fluid d-flex flex-column p-5"
