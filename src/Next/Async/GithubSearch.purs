@@ -29,6 +29,44 @@ import MyUtils (className)
       request.
 --}
 
+{--
+  NOTE: Design
+
+  1. Components: 3
+    - a `div` Parent container
+    - a search box component (Child)
+    - a content panel component (Child)
+
+  2. Desired behaviors:
+    1. User enter a key into the search box.
+    2. User click 'Search'.
+    3. The app searches.
+    4. The app shows search result on the content panel.
+      - content could be either valid or invalid, but must display both.
+
+  3. Technical design:
+    1. The Parent container tracks a state containing a posssible username (Maybe String).
+    2. This state.username is produced as output by the Search box.
+    3. The Parent send this state.username as input to the Display panel.
+
+                                  State { username }
+                                    :
+                                    :
+                                    :
+                                Container
+                                ^       |
+                                |       |
+      sends output string to    |       |  sends input string to
+                      |---------|       |---------|
+                      |                           |
+                      |                           |
+              onClick *                           v
+                    SearchBox                   DisplayPanel
+                    ---------                   ------------
+                    captures input              make async request
+                                                show response result
+--}
+
 component :: forall q i o m. H.Component q i o m
 component =
   H.mkComponent
