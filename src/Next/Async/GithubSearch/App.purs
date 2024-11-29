@@ -2,10 +2,47 @@ module Next.Async.GithubSearch where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Properties as HP
 import MyUtils (className)
+import Next.Async.GithubSearch.Component.ContentPanel as ContentPanel
+import Next.Async.GithubSearch.Component.SearchBox as SearchBox
+
+type State = { username :: Maybe String }
+
+type Slots q o r = (component :: H.Slot q o Unit | r)
+
+component :: forall q i o m. H.Component q i o m
+component =
+  H.mkComponent
+    { initialState
+    , render
+    , eval: H.mkEval $ H.defaultEval
+    }
+  where
+  initialState _ = { username: Nothing }
+
+render :: forall s a q o r m. s -> HH.ComponentHTML a (Slots q o r) m
+render _ =
+  HH.div
+    [ className "container-fluid d-flex flex-column p-5"
+    ]
+    -- search form
+    [ HH.div
+        [ className "row m-5" ]
+        [ HH.div
+            [ className "col" ]
+            [ HH.slot_ SearchBox.label unit SearchBox.component unit ]
+        ]
+    -- result panel
+    , HH.div
+        [ className "row m-5" ]
+        [ HH.div
+            [ className "col" ]
+            [ HH.slot_ ContentPanel.label unit ContentPanel.component unit ]
+        ]
+    ]
 
 {--
   NOTE: interface description.
@@ -61,53 +98,9 @@ import MyUtils (className)
                       |                           |
                       |                           |
               onClick *                           v
-                    SearchBox                   DisplayPanel
+                    SearchBox                   ContentPanel
                     ---------                   ------------
                     captures input              make async request
                                                 show response result
 --}
 
-component :: forall q i o m. H.Component q i o m
-component =
-  H.mkComponent
-    { initialState: identity
-    , render
-    , eval: H.mkEval $ H.defaultEval
-    }
-  where
-
-  render _ =
-    HH.div
-      [ className "container-fluid d-flex flex-column p-5"
-      ]
-      -- search form
-      [ HH.div
-          [ className "row m-5" ]
-          [ HH.div
-              [ className "col" ]
-              [ HH.div [ className "input-group" ]
-                  [ HH.span
-                      [ className "input-group-text" ]
-                      [ HH.text "username:"
-                      ]
-                  , HH.input
-                      [ className "form-control"
-                      , HP.placeholder "type to start searching..."
-                      ]
-                  , HH.button
-                      [ className "btn btn-primary"
-                      , HP.disabled false
-                      ]
-                      [ HH.text "Search" ]
-                  ]
-              ]
-          ]
-      -- result panel
-      , HH.div
-          [ className "row m-5 border border-dark-subtle p-3 rounded" ]
-          [ HH.div
-              [ className "" ]
-              [ HH.text "placeholder JSON"
-              ]
-          ]
-      ]
