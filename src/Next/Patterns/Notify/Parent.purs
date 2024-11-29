@@ -1,4 +1,4 @@
-module Next.Patterns.ChildNotifies.Parent where
+module Next.Patterns.Notify.Parent where
 
 import Prelude
 
@@ -8,8 +8,9 @@ import Effect.Class (class MonadEffect)
 import Effect.Class.Console (logShow)
 import Halogen as H
 import Halogen.HTML as HH
-import Next.Patterns.ChildNotifies.Child.Button as Child.Button
 import Type.Proxy (Proxy(..))
+
+import Next.Patterns.Notify.Child.Button as Child.Button
 
 type State = Int
 

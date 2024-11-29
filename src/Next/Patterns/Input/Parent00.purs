@@ -1,4 +1,4 @@
-module Next.Patterns.ParentInputs.Parent00 where
+module Next.Patterns.Input.Parent00 where
 
 import Prelude
 
@@ -6,7 +6,7 @@ import Halogen as H
 import Halogen.HTML as HH
 
 import Type.Proxy (Proxy(..))
-import Next.Patterns.ParentInputs.Child00 as Child
+import Next.Patterns.Input.Child.Node00 as Child
 
 -- | the parent component, which is simply a wrapper/container div.
 component :: forall q i o m. H.Component q i o m

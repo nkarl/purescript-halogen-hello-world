@@ -1,4 +1,4 @@
-module Next.Patterns.ParentInputs.Parent01 where
+module Next.Patterns.Input.Parent01 where
 
 import Prelude
 
@@ -10,8 +10,9 @@ import Effect.Aff.Class (class MonadAff)
 import Halogen                                                      as H
 import Halogen.HTML                                                 as HH
 import Halogen.Subscription                                         as HS
-import Next.Patterns.ParentInputs.Child01                           as Child
 import Type.Proxy (Proxy(..))
+
+import Next.Patterns.Input.Child.Node01                             as Child
 
 type State = { count :: Int }
 

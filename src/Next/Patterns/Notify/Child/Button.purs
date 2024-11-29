@@ -1,4 +1,4 @@
-module Next.Patterns.ChildNotifies.Child.Button where
+module Next.Patterns.Notify.Child.Button where
 
 import Prelude
 

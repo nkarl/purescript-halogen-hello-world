@@ -10,11 +10,12 @@ import Halogen.VDom.Driver (runUI)
 --import Effects.Async.HTTPRequests as HTTPRequests
 --import Effects.Subscriptinos.Timer as Timer
 --import Effects.Subscriptions.SubViaEventListener as SubViaEventListener
---import Next.Patterns.ParentInputs.Parent00 as ParentInputs.Parent00
---import Next.Patterns.ParentInputs.Parent01 as ParentInputs.Parent01
---import Next.Patterns.ChildNotifies.Parent as ChildNotifies.Parent
---import Next.Patterns.ChildNotifies.Example as ChildNotifies.Example
-import Next.Patterns.ParentQueries.Parent as ParentQueries.Parent
+--import Next.Patterns.Input.Parent00 as Input.Parent00
+--import Next.Patterns.Input.Parent01 as Input.Parent01
+--import Next.Patterns.Notify.Parent as Notify.Parent
+--import Next.Patterns.Notify.Example as Notify.Example
+--import Next.Patterns.Query.Parent as Query.Parent
+import Next.Patterns.Query.Example as Query.Example
 --import Next.Routing.SetHash as SetHash
 
 {-
@@ -31,9 +32,10 @@ main =
       --Timer.component unit body
       --SubViaEventListener.component unit body
       --HTTPRequests.component unit body
-      --ParentInputs.Parent00.component unit body
-      --ParentInputs.Parent01.component unit body
-      --ChildNotifies.Parent.component unit body
-      --ChildNotifies.Example.component unit body
-      ParentQueries.Parent.component unit body
+      --Input.Parent00.component unit body
+      --Input.Parent01.component unit body
+      --Notify.Parent.component unit body
+      --Notify.Example.component unit body
+      --Query.Parent.component unit body
+      Query.Example.component unit body
       --SetHash.component unit body

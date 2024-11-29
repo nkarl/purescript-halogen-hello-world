@@ -1,4 +1,4 @@
-module Next.Patterns.ParentInputs.Child01 where
+module Next.Patterns.Input.Child.Node01 where
 
 import Prelude
 import Data.Maybe (Maybe(..))

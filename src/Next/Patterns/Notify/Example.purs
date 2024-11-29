@@ -1,4 +1,4 @@
-module Next.Patterns.ChildNotifies.Example where
+module Next.Patterns.Notify.Example where
 
 import Prelude
 
