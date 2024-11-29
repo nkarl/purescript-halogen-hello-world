@@ -1,4 +1,4 @@
-module Effects.Subscriptions.SubViaEventListener where
+module Core.Effect.Subscriptions.SubViaEventListener where
 
 import Prelude
 

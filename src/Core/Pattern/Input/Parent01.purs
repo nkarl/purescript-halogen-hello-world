@@ -1,4 +1,4 @@
-module Next.Patterns.Input.Parent01 where
+module Core.Pattern.Input.Parent01 where
 
 import Prelude
 
@@ -12,7 +12,7 @@ import Halogen.HTML                                                 as HH
 import Halogen.Subscription                                         as HS
 import Type.Proxy (Proxy(..))
 
-import Next.Patterns.Input.Child.Node01                             as Child
+import Core.Pattern.Input.Child.Node01                              as Child
 
 type State = { count :: Int }
 

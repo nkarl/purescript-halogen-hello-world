@@ -1,4 +1,4 @@
-module Effects.Subscriptions.Timer where
+module Core.Effect.Subscriptions.Timer where
 
 import Prelude
 import Control.Monad.Rec.Class (forever)

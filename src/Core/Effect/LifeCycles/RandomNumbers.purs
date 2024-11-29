@@ -1,4 +1,4 @@
-module Effects.LifeCycles.RandomNumbers where
+module Core.Effect.LifeCycles.RandomNumbers where
 
 import Prelude
 import Data.Maybe (Maybe(..), maybe)

@@ -1,4 +1,4 @@
-module Next.Patterns.Query.Child.Button where
+module Core.Pattern.Query.Child.Button where
 
 import Prelude
 

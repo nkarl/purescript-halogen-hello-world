@@ -1,4 +1,4 @@
-module Next.Patterns.Notify.Parent where
+module Core.Pattern.Notify.Parent where
 
 import Prelude
 
@@ -10,7 +10,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Type.Proxy (Proxy(..))
 
-import Next.Patterns.Notify.Child.Button as Child.Button
+import Core.Pattern.Notify.Child.Button as Child.Button
 
 type State = Int
 

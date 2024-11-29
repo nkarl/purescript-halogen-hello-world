@@ -1,4 +1,4 @@
-module Component.Counter where
+module Core.Basic.Counter where
 
 import Prelude
 

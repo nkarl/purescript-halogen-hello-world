@@ -1,4 +1,4 @@
-module Next.Patterns.Input.Child.Node00 where
+module Core.Pattern.Input.Child.Node00 where
 
 import Prelude
 

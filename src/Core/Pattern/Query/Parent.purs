@@ -1,13 +1,13 @@
-module Next.Patterns.Query.Parent where
+module Core.Pattern.Query.Parent where
 
 import Prelude
 
-import CSS (query)
 import Effect.Class (class MonadEffect)
 import Effect.Class.Console (logShow)
 import Halogen as H
 import Halogen.HTML as HH
-import Next.Patterns.Query.Child.Button as Button
+
+import Core.Pattern.Query.Child.Button as Button
 
 type State = { clickCount :: Int }
 

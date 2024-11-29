@@ -1,4 +1,4 @@
-module Effects.Async.HTTPRequests where
+module Core.Effect.Async.HTTPRequests where
 
 import Prelude
 

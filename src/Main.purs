@@ -6,15 +6,15 @@ import Effect (Effect)
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 
---import Effects.LifeCycles.RandomNumbers as RandomNumbers
---import Effects.Async.HTTPRequests as HTTPRequests
---import Effects.Subscriptinos.Timer as Timer
---import Effects.Subscriptions.SubViaEventListener as SubViaEventListener
---import Next.Patterns.Input.Parent00 as Input.Parent00
---import Next.Patterns.Input.Parent01 as Input.Parent01
---import Next.Patterns.Notify.Parent as Notify.Parent
---import Next.Patterns.Notify.Example as Notify.Example
-import Next.Patterns.Query.Parent as Query.Parent
+--import Core.Effect.LifeCycles.RandomNumbers as RandomNumbers
+--import Core.Effect.Async.HTTPRequests as HTTPRequests
+--import Core.Effect.Subscriptinos.Timer as Timer
+--import Core.Effect.Subscriptions.SubViaEventListener as SubViaEventListener
+--import Core.Pattern.Input.Parent00 as Input.Parent00
+--import Core.Pattern.Input.Parent01 as Input.Parent01
+--import Core.Pattern.Notify.Parent as Notify.Parent
+--import Core.Pattern.Notify.Example as Notify.Example
+import Core.Pattern.Query.Parent as Query.Parent
 --import Next.Routing.SetHash as SetHash
 
 {-
