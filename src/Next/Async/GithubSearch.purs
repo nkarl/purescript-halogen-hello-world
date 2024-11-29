@@ -5,6 +5,7 @@ import Prelude
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
+import MyUtils (className)
 
 {--
   NOTE: interface description.
@@ -26,7 +27,7 @@ import Halogen.HTML.Properties as HP
 
     - Github should have a request cap (mabye 5000/day), so consider a timeout before each
       request.
---}  
+--}
 
 component :: forall q i o m. H.Component q i o m
 component =
@@ -38,11 +39,37 @@ component =
   where
 
   render _ =
-    HH.div_
-      [ HH.label
-          []
-          [ HH.text "Search"
-          , HH.input
-              [ HP.value "type to start searching..." ]
+    HH.div
+      [ className "container-fluid d-flex flex-column p-5"
+      ]
+      -- search form
+      [ HH.div
+          [ className "row m-5" ]
+          [ HH.div
+              [ className "col" ]
+              [ HH.div [ className "input-group" ]
+                  [ HH.span
+                      [ className "input-group-text" ]
+                      [ HH.text "username:"
+                      ]
+                  , HH.input
+                      [ className "form-control"
+                      , HP.placeholder "type to start searching..."
+                      ]
+                  , HH.button
+                      [ className "btn btn-primary"
+                      , HP.disabled false
+                      ]
+                      [ HH.text "Search" ]
+                  ]
+              ]
+          ]
+      -- result panel
+      , HH.div
+          [ className "row m-5 border border-dark-subtle p-3 rounded" ]
+          [ HH.div
+              [ className "" ]
+              [ HH.text "placeholder JSON"
+              ]
           ]
       ]
