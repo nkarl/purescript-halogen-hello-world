@@ -2,7 +2,7 @@
   description = "RealWorld spec in the PureScript Halogen framework";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     purescript-overlay.url = "github:thomashoneyman/purescript-overlay";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
