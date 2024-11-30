@@ -3,6 +3,8 @@ module Next.Async.GithubSearch where
 import Prelude
 
 import Data.Maybe (Maybe(..))
+import Effect.Class (class MonadEffect)
+import Effect.Class.Console (logShow)
 import Halogen as H
 import Halogen.HTML as HH
 import MyUtils (className)
@@ -11,22 +13,26 @@ import Next.Async.GithubSearch.Component.SearchBox as SearchBox
 
 type State = { username :: Maybe String }
 
+data Action = Handle SearchBox.Output
+
 type Slots =
   ( searchBox :: SearchBox.Slot
   , contentPanel :: ContentPanel.Slot
   )
 
-component :: forall q i o m. H.Component q i o m
+component :: forall q i o m. MonadEffect m => H.Component q i o m
 component =
   H.mkComponent
     { initialState
     , render
     , eval: H.mkEval $ H.defaultEval
+        { handleAction = handleAction
+        }
     }
   where
   initialState _ = { username: Nothing }
 
-render :: forall s a m. s -> HH.ComponentHTML a (Slots) m
+render :: forall s m. s -> HH.ComponentHTML Action (Slots) m
 render _ =
   HH.div
     [ className "container-fluid d-flex flex-column p-5"
@@ -36,7 +42,7 @@ render _ =
         [ className "row m-5" ]
         [ HH.div
             [ className "col" ]
-            [ HH.slot_ SearchBox.label unit SearchBox.component unit ]
+            [ HH.slot SearchBox.label unit SearchBox.component unit $ Handle ]
         ]
     -- result panel
     , HH.div
@@ -46,6 +52,12 @@ render _ =
             [ HH.slot_ ContentPanel.label unit ContentPanel.component unit ]
         ]
     ]
+
+handleAction :: forall o m. MonadEffect m => Action -> H.HalogenM State Action (Slots) o m Unit
+handleAction = case _ of
+  Handle userInput -> do
+    H.modify_ _ { username = Just userInput }
+    --H.gets _.username >>= logShow
 
 {--
   NOTE: interface description.
