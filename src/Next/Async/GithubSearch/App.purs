@@ -3,7 +3,7 @@ module Next.Async.GithubSearch where
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Effect.Class (class MonadEffect)
+import Effect.Aff.Class (class MonadAff)
 import Effect.Class.Console (logShow)
 import Halogen as H
 import Halogen.HTML as HH
@@ -20,7 +20,7 @@ type Slots =
   , contentPanel :: ContentPanel.Slot
   )
 
-component :: forall q i o m. MonadEffect m => H.Component q i o m
+component :: forall q i o m. MonadAff m => H.Component q i o m
 component =
   H.mkComponent
     { initialState
@@ -32,7 +32,7 @@ component =
   where
   initialState _ = { username: Nothing }
 
-render :: forall s m. s -> HH.ComponentHTML Action (Slots) m
+render :: forall s m. MonadAff m => s -> HH.ComponentHTML Action (Slots) m
 render _ =
   HH.div
     [ className "container-fluid d-flex flex-column p-5"
@@ -49,15 +49,15 @@ render _ =
         [ className "row m-5" ]
         [ HH.div
             [ className "col" ]
-            [ HH.slot_ ContentPanel.label unit ContentPanel.component unit ]
+            [ HH.slot_ ContentPanel.label unit ContentPanel.component "" ] -- NOTE: maybe use query pattern here
         ]
     ]
 
-handleAction :: forall o m. MonadEffect m => Action -> H.HalogenM State Action (Slots) o m Unit
+handleAction :: forall o m. MonadAff m => Action -> H.HalogenM State Action (Slots) o m Unit
 handleAction = case _ of
   Handle userInput -> do
     H.modify_ _ { username = Just userInput }
-    --H.gets _.username >>= logShow
+    H.gets _.username >>= logShow
 
 {--
   NOTE: interface description.

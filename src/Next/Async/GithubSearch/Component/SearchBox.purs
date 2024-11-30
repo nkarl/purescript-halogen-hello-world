@@ -56,10 +56,10 @@ component =
 
   render :: forall s. s -> H.ComponentHTML Action () m
   render _ =
-    HH.div [ className "input-group" ]
+    HH.div [ className "input-group w-50 container-fluid" ]
       [ HH.span
           [ className "input-group-text" ]
-          [ HH.text "username:"
+          [ HH.text "username"
           ]
       , HH.input
           [ className "form-control"
