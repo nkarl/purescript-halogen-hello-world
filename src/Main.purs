@@ -6,9 +6,7 @@ import Effect (Effect)
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
 
---import Next.Async.GithubSearch as GithubSearch
---import Core.Effect.Async.HTTPRequests as HTTPRequests
-import Core.Effect.Async.HTTPRequestsNew as HTTPRequests
+import Next.Async.GithubSearch as GithubSearch
 
 {-
   TODO: Make an AppM monad component to wrap all components
@@ -19,4 +17,4 @@ main =
   HA.runHalogenAff do
     body <- HA.awaitBody
     runUI
-      HTTPRequests.component unit body
+      GithubSearch.component unit body

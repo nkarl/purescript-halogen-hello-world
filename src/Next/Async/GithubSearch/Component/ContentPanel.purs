@@ -2,66 +2,54 @@ module Next.Async.GithubSearch.Component.ContentPanel where
 
 import Prelude
 
-import Affjax.ResponseFormat as AXRF
-import Affjax.Web as AX
-import Data.Either (hush)
 import Data.Maybe (Maybe(..))
-import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import MyUtils (className)
 import Type.Proxy (Proxy(..))
-import Web.Event.Event (Event)
-import Web.Event.Event as Event
 
-type UserName = String
+type Content = String
 
-type Input = UserName
+type Input = Content
 
 type State =
   { loading :: Boolean
-  , username :: UserName
+  , content :: Content
   , result :: Maybe String
   }
 
-data Action = MakeRequest Event
+data Action = Receive Content
 
 type Slot = forall q o. H.Slot q o Unit
 
 label = Proxy :: Proxy "contentPanel"
 
-contentPanel :: forall q o m. MonadAff m => H.Component q Input o m
+contentPanel :: forall q o m. H.Component q Input o m
 contentPanel = component
 
-component :: forall q o m. MonadAff m => H.Component q Input o m
+component :: forall q o m. H.Component q Input o m
 component =
   H.mkComponent
     { initialState
     , render
     , eval: H.mkEval $ H.defaultEval
         { handleAction = handleAction
+        , receive = Just <<< Receive
         }
     }
   where
-  initialState username =
+  initialState _ =
     { loading: false
-    , username: username
+    , content: ""
     , result: Nothing
     }
 
-  --render :: State -> H.ComponentHTML Action () m
-  render _ =
-    HH.div
-      [ className "border border-dark-subtle p-3 rounded h-50" ]
-      [ HH.text "placeholder JSON" ]
-
   handleAction :: Action -> H.HalogenM State Action () o m Unit
   handleAction = case _ of
-    MakeRequest e -> do
-      H.liftEffect $ Event.preventDefault e
-      --user <- H.liftEffect $ H.gets _.username
-      --H.modify_ _ { loading = true }
-      --response <- AX.get AXRF.string ("https://api.github.com/users/" <> user)
-      --H.modify_ _ { loading = false, result = map _.body (hush response) }
-      pure unit
+    Receive content -> do
+      H.modify_ \s -> s { content = content }
 
+  render { content } =
+    HH.pre
+      [ className "container-fluid border border-dark-subtle p-3 rounded" ]
+      [ HH.code_ [ HH.text content ] ]

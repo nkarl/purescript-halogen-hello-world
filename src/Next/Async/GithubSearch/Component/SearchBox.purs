@@ -2,14 +2,20 @@ module Next.Async.GithubSearch.Component.SearchBox where
 
 import Prelude
 
+import Affjax.ResponseFormat as AXRF
+import Affjax.Web as AXW
+import Data.Either (hush)
+import Data.Maybe (Maybe)
 import Data.String as String
+import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Properties as HP
 import Halogen.HTML.Events as HE
-import Type.Proxy (Proxy(..))
-
+import Halogen.HTML.Properties as HP
 import MyUtils (className)
+import Type.Proxy (Proxy(..))
+import Web.Event.Event (Event)
+import Web.Event.Event as Event
 
 {--
   NOTE: description.
@@ -33,16 +39,18 @@ type State = UserName
 
 data Action
   = Capture UserName
-  | SearchButtonClicked
+  | SearchButtonClicked Event
 
-type Output = UserName
+type Output = Maybe String
+
+data Query a = GetUserData (UserName -> a)
 
 label = Proxy :: Proxy "searchBox"
 
-searchBox :: forall q i m. H.Component q i Output m
+searchBox :: forall q i m. MonadAff m => H.Component q i Output m
 searchBox = component
 
-component :: forall q i m. H.Component q i Output m
+component :: forall q i m. MonadAff m => H.Component q i Output m
 component =
   H.mkComponent
     { initialState
@@ -54,9 +62,29 @@ component =
   where
   initialState _ = ""
 
+
+  handleAction = case _ of
+    Capture input -> do
+      let
+        isValidLength = String.length input < 3
+
+      unless isValidLength do -- NOTE: parse, don't validate.
+        H.modify_ \_ -> input
+
+    SearchButtonClicked e -> do
+      H.liftEffect $ Event.preventDefault e
+      username <- H.get
+      let baseGitHubApi = "https://api.github.com/users/"
+      response <- H.liftAff $ AXW.get AXRF.string $ baseGitHubApi <> username
+      H.raise $ _.body <$> (hush response)
+
+
   render :: forall s. s -> H.ComponentHTML Action () m
   render _ =
-    HH.div [ className "input-group w-50 container-fluid" ]
+    HH.form
+      [ className "input-group w-50 container-fluid"
+      , HE.onSubmit \e -> SearchButtonClicked e
+      ]
       [ HH.span
           [ className "input-group-text" ]
           [ HH.text "username"
@@ -69,19 +97,7 @@ component =
       , HH.button
           [ className "btn btn-primary"
           , HP.disabled false
-          , HE.onClick \_ -> SearchButtonClicked
           ]
           [ HH.text "Search" ]
       ]
 
-  handleAction = case _ of
-    Capture input -> do
-      let
-        isValidLength = String.length input < 3
-
-      unless isValidLength do -- NOTE: parse, don't validate.
-        H.modify_ \_ -> input
-
-    SearchButtonClicked -> do
-      username <- H.get
-      H.raise username

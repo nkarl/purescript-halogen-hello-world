@@ -11,7 +11,7 @@ import MyUtils (className)
 import Next.Async.GithubSearch.Component.ContentPanel as ContentPanel
 import Next.Async.GithubSearch.Component.SearchBox as SearchBox
 
-type State = { username :: Maybe String }
+type State = { content :: Maybe String }
 
 data Action = Handle SearchBox.Output
 
@@ -30,10 +30,10 @@ component =
         }
     }
   where
-  initialState _ = { username: Nothing }
+  initialState _ = { content: Just "" }
 
-render :: forall s m. MonadAff m => s -> HH.ComponentHTML Action (Slots) m
-render _ =
+render :: forall m. MonadAff m => State -> HH.ComponentHTML Action (Slots) m
+render { content } =
   HH.div
     [ className "container-fluid d-flex flex-column p-5"
     ]
@@ -49,15 +49,17 @@ render _ =
         [ className "row m-5" ]
         [ HH.div
             [ className "col" ]
-            [ HH.slot_ ContentPanel.label unit ContentPanel.component "" ] -- NOTE: maybe use query pattern here
+            case content of
+              Nothing -> [ HH.text "Something went wrong." ]
+              Just text -> [ HH.slot_ ContentPanel.label unit ContentPanel.component text ]
         ]
     ]
 
 handleAction :: forall o m. MonadAff m => Action -> H.HalogenM State Action (Slots) o m Unit
 handleAction = case _ of
-  Handle userInput -> do
-    H.modify_ _ { username = Just userInput }
-    H.gets _.username >>= logShow
+  Handle output -> do
+    H.modify_ _ { content = output }
+    H.gets _.content >>= logShow
 
 {--
   NOTE: interface description.
@@ -97,11 +99,11 @@ handleAction = case _ of
       - content could be either valid or invalid, but must display both.
 
   3. Technical design:
-    1. The Parent container tracks a state containing a posssible username (Maybe String).
-    2. This state.username is produced as output by the Search box.
-    3. The Parent send this state.username as input to the Display panel.
+    1. The Parent container tracks a state containing a posssible content (Maybe String).
+    2. This state.content is produced as output by the Search box.
+    3. The Parent send this state.content as input to the Display panel.
 
-                                  State { username }
+                                  State { content }
                                     :
                                     :
                                     :
