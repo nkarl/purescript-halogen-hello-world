@@ -2,25 +2,25 @@ module Core.Effect.Async.HTTPRequestsNew where
 
 import Prelude
 
-import Affjax.ResponseFormat as AXRF
-import Affjax.Web as AXWeb
+import Affjax.ResponseFormat             as  AXRF
+import Affjax.Web                        as  AXWeb
 import Data.Either (hush)
 import Data.Maybe (Maybe(..))
 import Effect.Aff.Class (class MonadAff)
-import Halogen as H
-import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
-import Halogen.HTML.Properties as HP
+import Halogen                           as  H
+import Halogen.HTML                      as  HH
+import Halogen.HTML.Events               as  HE
+import Halogen.HTML.Properties           as  HP
 import MyUtils (className)
 import Web.Event.Event (Event)
-import Web.Event.Event as Event
+import Web.Event.Event                   as  Event
 
 type UserName = String
 
 type State =
-  { loading :: Boolean
+  { loading  :: Boolean
   , username :: UserName
-  , content :: Maybe String
+  , content  :: Maybe String
   }
 
 data Action
@@ -37,9 +37,12 @@ component =
         }
     }
   where
+  initialState :: i -> State
   initialState _ = { loading: false, username: "", content: Nothing }
 
+  handleAction :: Action -> H.HalogenM State Action () o m Unit
   handleAction = case _ of
+
     Capture username -> do
       H.modify_ _ { username = username }
 
@@ -52,6 +55,7 @@ component =
       response <- H.liftAff $ AXWeb.get AXRF.string (baseGitHubApi <> username)
       H.modify_ _ { loading = false, content = _.body <$> (hush response) }
 
+  render :: State -> H.ComponentHTML Action () m
   render state =
     -- heading title
     HH.div
