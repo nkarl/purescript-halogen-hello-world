@@ -44,9 +44,9 @@ component =
     Handle _ output -> case output of
       Button.Clicked -> do
         H.modify_ \s -> s { clickCount = s.clickCount + 1 }
-        H.requestAll Button._label (Button.GetSwitch) >>= logShow
-        H.request Button._label 1 (Button.GetSwitch) >>= logShow
-        H.tell Button._label 0 (Button.SetSwitch true)
+        H.requestAll  Button._label   (Button.GetSwitch) >>= logShow
+        H.request     Button._label 1 (Button.GetSwitch) >>= logShow
+        H.tell        Button._label 0 (Button.SetSwitch true)
 
 {--
   NOTE: Reasoning about this Example.

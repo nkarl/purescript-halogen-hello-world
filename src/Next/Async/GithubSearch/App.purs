@@ -11,7 +11,9 @@ import MyUtils (className)
 import Next.Async.GithubSearch.Component.ContentPanel as ContentPanel
 import Next.Async.GithubSearch.Component.SearchBox as SearchBox
 
-type State = { content :: Maybe String }
+type Content = String
+
+type State = { content :: Maybe Content }
 
 data Action = Handle SearchBox.Output
 
@@ -103,14 +105,14 @@ handleAction = case _ of
     2. This state.content is produced as output by the Search box.
     3. The Parent send this state.content as input to the Display panel.
 
-                                  State { content }
+                                  State { maybe content }
                                     :
                                     :
                                     :
                                 Container
                                 ^       |
                                 |       |
-      sends output string to    |       |  sends input string to
+      sends maybe output to     |       |  sends input string to
                       |---------|       |---------|
                       |                           |
                       |                           |
@@ -118,6 +120,6 @@ handleAction = case _ of
                     SearchBox                   ContentPanel
                     ---------                   ------------
                     captures input              make async request
-                                                show response result
+                    performs a-effect           show response result
 --}
 

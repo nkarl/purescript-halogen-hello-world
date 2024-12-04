@@ -59,7 +59,7 @@ component =
         }
 
     MakeRequest e -> do
-      H.liftEffect $ Event.preventDefault e -- lift the Effect into the HalogenM context
+      H.liftEffect $ Event.preventDefault e -- prevents the form submission from refreshing the page.
       username <- H.gets _.username
       H.modify_ _ { loading = true }
       response <- H.liftAff $ AX.get AXRF.string ("https://api.github.com/users/" <> username)
