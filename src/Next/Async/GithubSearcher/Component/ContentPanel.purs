@@ -1,4 +1,4 @@
-module Next.Async.GithubSearch.Component.ContentPanel where
+module Next.Async.GithubSearcher.Component.ContentPanel where
 
 import Prelude
 
@@ -8,7 +8,7 @@ import Halogen.HTML as HH
 import MyUtils (className)
 import Type.Proxy (Proxy(..))
 
-type Content = String
+type Content = Maybe String
 
 type Input = Content
 
@@ -40,7 +40,7 @@ component =
   where
   initialState _ =
     { loading: false
-    , content: ""
+    , content: Nothing
     , result: Nothing
     }
 
@@ -52,4 +52,10 @@ component =
   render { content } =
     HH.pre
       [ className "container-fluid border border-dark-subtle p-3 rounded" ]
-      [ HH.code_ [ HH.text content ] ]
+      [ HH.code_
+          [ HH.text
+              case content of
+                Nothing -> "Something went wrong."
+                Just text -> text
+          ]
+      ]

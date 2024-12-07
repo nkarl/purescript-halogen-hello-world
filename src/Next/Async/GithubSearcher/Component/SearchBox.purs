@@ -1,4 +1,4 @@
-module Next.Async.GithubSearch.Component.SearchBox where
+module Next.Async.GithubSearcher.Component.SearchBox where
 
 import Prelude
 
@@ -62,13 +62,13 @@ component =
   where
   initialState _ = ""
 
-
+  handleAction :: Action -> H.HalogenM State Action () Output m Unit
   handleAction = case _ of
     Capture input -> do
       let
         isValidLength = String.length input < 3
 
-      unless isValidLength do -- NOTE: parse, don't validate.
+      unless isValidLength do
         H.modify_ \_ -> input
 
     SearchButtonClicked e -> do
@@ -77,7 +77,6 @@ component =
       let baseGitHubApi = "https://api.github.com/users/"
       response <- H.liftAff $ AXW.get AXRF.string $ baseGitHubApi <> username
       H.raise $ _.body <$> (hush response)
-
 
   render :: forall s. s -> H.ComponentHTML Action () m
   render _ =
