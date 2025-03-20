@@ -45,7 +45,9 @@ component =
       Button.Clicked -> do
         H.modify_ \s -> s { clickCount = s.clickCount + 1 }
         H.requestAll  Button._label   (Button.GetSwitch) >>= logShow
+        -- request  returns `a` which morphs to `Boolean` (which is the type of a State attribute of the Child)
         H.request     Button._label 1 (Button.GetSwitch) >>= logShow
+        -- tell     constrains  `a` to `Unit`
         H.tell        Button._label 0 (Button.SetSwitch true)
 
 {--
@@ -114,9 +116,9 @@ component =
                                 |       |
                                 |       |----->>   receive
                                 |
-                                |---------------  Queries
-                                                  /     \
-                                          SetSwitch     GetSwitch
+                                |---------------   Queries
+                                                   /     \
+                                           SetSwitch     GetSwitch
 
 
   NOTE: query questions.
@@ -132,10 +134,10 @@ component =
   From this example, we see that there are 2 kinds of requests: effectful/forgetful and tracing/faithful.
     - Tell style
       - `tell       -> SetSwitch` is effectful. It just needs done without output.
-      - `tellAll` should tell all child to exec some effect.
+      - `tellAll`   tells all child to exec some effect.
     - Request style
       - `request` should tell a specific child to perform effect and return its info.
-      - `requestAll -> GetSwitch` is tracing. It needs to return the map of all Button slots. 
+      - `requestAll -> GetSwitch` is tracing. It needs to return the info from all Child as a map. 
 
   NOTE: In this example, both query variants involves the Boolean field state `isEnabled` in the Child. It is
   possible to define other variants to get other field states if needed.

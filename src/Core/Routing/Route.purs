@@ -7,7 +7,7 @@ import Data.Generic.Rep (class Generic)
 import Data.Maybe (Maybe)
 import Data.UUID as UUID
 import Data.UserId (UserId(..))
-import Routing.Duplex (RouteDuplex', root, path, as, optional, segment)
+import Routing.Duplex (RouteDuplex', root, as, optional, segment)
 import Routing.Duplex.Generic (sum, noArgs)
 import Routing.Duplex.Generic.Syntax ((/))
 
@@ -29,9 +29,9 @@ userId = as printer parser
   parser = UUID.parseUUID >>> map UserId >>> note "Invalid UserId"
 
 routeCodec :: RouteDuplex' Route
-routeCodec = root $ sum
-  { "LogOn": path "logon" noArgs
-  , "LogOff": path "logoff" noArgs
+routeCodec = root $ sum -- `path` can be omitted for constant string
+  { "LogOn": "logon" / noArgs
+  , "LogOff": "logoff" / noArgs
   , "Users": "users" / optional segment
   --, "Users": "users" / (optional $ userId segment)
   }

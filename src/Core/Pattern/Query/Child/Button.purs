@@ -61,9 +61,10 @@ component =
   handleQuery :: forall a. Query a -> H.HalogenM State Action () Output m (Maybe a)
   handleQuery = case _ of
     SetSwitch enabled any -> do
-       H.modify_ \s -> s { isEnabled = enabled }
-       pure $ Just any
+      H.modify_ \s -> s { isEnabled = enabled }
+      pure $ Just any
 
+    -- must be defined in accordance with the request api.
     GetSwitch reply -> do
-       { isEnabled } <- H.get
-       pure $ Just (reply isEnabled)
+      enabled <- H.gets _.isEnabled
+      pure $ Just (reply enabled)
